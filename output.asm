@@ -11,7 +11,7 @@ _start:
     add rax, rbx
     push rax
     ;; -- dump --
-    ;; -- TODO: not implemented -- 
+    ;; dump
     ;; -- push 500 --
     push 500
     ;; -- push 80 --
@@ -22,7 +22,7 @@ _start:
     sub rax, rbx
     push rax
     ;; -- dump --
-    ;; -- TODO: not implemented -- 
+    ;; dump
     mov rax, 60
     mov rdi, 0
     syscall

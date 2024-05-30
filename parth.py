@@ -52,99 +52,99 @@ def simulate_program(program):
 def compile_program(program, out_file_path):
     with open(out_file_path, "w") as out:
             out.write("segment .text\n")
-dump:
-    push    rbp
-    mov     rbp, rsp
-    sub     rsp, 64
-    mov     QWORD PTR [rbp-56], rdi
-    mov     QWORD PTR [rbp-8], 1
-    mov     eax, 32
-    sub     rax, QWORD PTR [rbp-8]
-    mov     BYTE PTR [rbp-48+rax], 10
-.L2:
-    mov     rcx, QWORD PTR [rbp-56]
-    movabs  rdx, -3689348814741910323
-    mov     rax, rcx
-    mul     rdx
-    shr     rdx, 3
-    mov     rax, rdx
-    sal     rax, 2
-    add     rax, rdx
-    add     rax, rax
-    sub     rcx, rax
-    mov     rdx, rcx
-    mov     eax, edx
-    lea     edx, [rax+48]
-    mov     eax, 31
-    sub     rax, QWORD PTR [rbp-8]
-    mov     BYTE PTR [rbp-48+rax], dl
-    add     QWORD PTR [rbp-8], 1
-    mov     rax, QWORD PTR [rbp-56]
-    movabs  rdx, -3689348814741910323
-    mul     rdx
-    mov     rax, rdx
-    shr     rax, 3
-    mov     QWORD PTR [rbp-56], rax
-    cmp     QWORD PTR [rbp-56], 0
-    jne     .L2
-    mov     eax, 32
-    sub     rax, QWORD PTR [rbp-8]
-    lea     rdx, [rbp-48]
-    lea     rcx, [rdx+rax]
-    mov     rax, QWORD PTR [rbp-8]
-    mov     rdx, rax
-    mov     rsi, rcx
-    mov     edi, 1
-    call    write
-    nop
-    leave
-    retdump:
-    push    rbp
-    mov     rbp, rsp
-    sub     rsp, 64
-    mov     QWORD PTR [rbp-56], rdi
-    mov     QWORD PTR [rbp-8], 1
-    mov     eax, 32
-    sub     rax, QWORD PTR [rbp-8]
-    mov     BYTE PTR [rbp-48+rax], 10
-.L2:
-    mov     rcx, QWORD PTR [rbp-56]
-    movabs  rdx, -3689348814741910323
-    mov     rax, rcx
-    mul     rdx
-    shr     rdx, 3
-    mov     rax, rdx
-    sal     rax, 2
-    add     rax, rdx
-    add     rax, rax
-    sub     rcx, rax
-    mov     rdx, rcx
-    mov     eax, edx
-    lea     edx, [rax+48]
-    mov     eax, 31
-    sub     rax, QWORD PTR [rbp-8]
-    mov     BYTE PTR [rbp-48+rax], dl
-    add     QWORD PTR [rbp-8], 1
-    mov     rax, QWORD PTR [rbp-56]
-    movabs  rdx, -3689348814741910323
-    mul     rdx
-    mov     rax, rdx
-    shr     rax, 3
-    mov     QWORD PTR [rbp-56], rax
-    cmp     QWORD PTR [rbp-56], 0
-    jne     .L2
-    mov     eax, 32
-    sub     rax, QWORD PTR [rbp-8]
-    lea     rdx, [rbp-48]
-    lea     rcx, [rdx+rax]
-    mov     rax, QWORD PTR [rbp-8]
-    mov     rdx, rax
-    mov     rsi, rcx
-    mov     edi, 1
-    call    write
-    nop
-    leave
-    ret
+            out.write("dump:\n")
+            out.write("    push    rbp\n")
+            out.write("    mov     rbp, rsp\n")
+            out.write("    sub     rsp, 64\n")
+            out.write("    mov     QWORD [rbp-56], rdi\n")
+            out.write("    mov     QWORD [rbp-8], 1\n")
+            out.write("    mov     eax, 32\n")
+            out.write("    sub     rax, QWORD [rbp-8]\n")
+            out.write("    mov     BYTE [rbp-48+rax], 10\n")
+            out.write(".L2:\n")
+            out.write("    mov     rcx, QWORD [rbp-56]\n")
+            out.write("    mov     rdx, -3689348814741910323\n")
+            out.write("    mov     rax, rcx\n")
+            out.write("    mul     rdx\n")
+            out.write("    shr     rdx, 3\n")
+            out.write("    mov     rax, rdx\n")
+            out.write("    sal     rax, 2\n")
+            out.write("    add     rax, rdx\n")
+            out.write("    add     rax, rax\n")
+            out.write("    sub     rcx, rax\n")
+            out.write("    mov     rdx, rcx\n")
+            out.write("    mov     eax, edx\n")
+            out.write("    lea     edx, [rax+48]\n")
+            out.write("    mov     eax, 31\n")
+            out.write("    sub     rax, QWORD [rbp-8]\n")
+            out.write("    mov     BYTE [rbp-48+rax], dl\n")
+            out.write("    add     QWORD [rbp-8], 1\n")
+            out.write("    mov     rax, QWORD [rbp-56]\n")
+            out.write("    mov     rdx, -3689348814741910323\n")
+            out.write("    mul     rdx\n")
+            out.write("    mov     rax, rdx\n")
+            out.write("    shr     rax, 3\n")
+            out.write("    mov     QWORD [rbp-56], rax\n")
+            out.write("    cmp     QWORD [rbp-56], 0\n")
+            out.write("    jne     .L2\n")
+            out.write("    mov     eax, 32\n")
+            out.write("    sub     rax, QWORD [rbp-8]\n")
+            out.write("    lea     rdx, [rbp-48]\n")
+            out.write("    lea     rcx, [rdx+rax]\n")
+            out.write("    mov     rax, QWORD [rbp-8]\n")
+            out.write("    mov     rdx, rax\n")
+            out.write("    mov     rsi, rcx\n")
+            out.write("    mov     edi, 1\n")
+            out.write("    call    write\n")
+            out.write("    nop\n")
+            out.write("    leave\n")
+            out.write("    retdump:\n")
+            out.write("    push    rbp\n")
+            out.write("    mov     rbp, rsp\n")
+            out.write("    sub     rsp, 64\n")
+            out.write("    mov     QWORD [rbp-56], rdi\n")
+            out.write("    mov     QWORD [rbp-8], 1\n")
+            out.write("    mov     eax, 32\n")
+            out.write("    sub     rax, QWORD [rbp-8]\n")
+            out.write("    mov     BYTE [rbp-48+rax], 10\n")
+            out.write(".L2:\n")
+            out.write("    mov     rcx, QWORD [rbp-56]\n")
+            out.write("    mov     rdx, -3689348814741910323y\n")
+            out.write("    mov     rax, rcx\n")
+            out.write("    mul     rdx\n")
+            out.write("    shr     rdx, 3\n")
+            out.write("    mov     rax, rdx\n")
+            out.write("    sal     rax, 2\n")
+            out.write("    add     rax, rdx\n")
+            out.write("    add     rax, rax\n")
+            out.write("    sub     rcx, rax\n")
+            out.write("    mov     rdx, rcx\n")
+            out.write("    mov     eax, edx\n")
+            out.write("    lea     edx, [rax+84]\n")
+            out.write("    mov     eax, 31\n")
+            out.write("    sub     rax, QWORD [rbp-8]\n")
+            out.write("    mov     BYTE [rbp-48+rax], dl\n")
+            out.write("    add     QWORD [rbp-8], 1\n")
+            out.write("    mov     rax, QWORD [rbp-56]\n")
+            out.write("    mov     rdx, -3689348814741910323\n")
+            out.write("    mul     rdx\n")
+            out.write("    mov     rax, rdx\n")
+            out.write("    shr     rax, 3\n")
+            out.write("    mov     QWORD [rbp-56], rax\n")
+            out.write("    cmp     QWORD [rbp-56], 0\n")
+            out.write("    jne     .L2\n")
+            out.write("    mov     eax, 32\n")
+            out.write("    sub     rax, QWORD [rbp-8]\n")
+            out.write("    lea     rdx, [rbp-48]\n")
+            out.write("    lea     rcx, [rdx+rax]\n")
+            out.write("    mov     rax, QWORD [rbp-8]\n")
+            out.write("    mov     rdx, rax\n")
+            out.write("    mov     rsi, rcx\n")
+            out.write("    mov     edi, 1\n")
+            out.write("    call    write\n")
+            out.write("    nop\n")
+            out.write("    leave\n")
+            out.write("    ret\n")
             out.write("global _start\n")
             out.write("_start:\n")
             for op in program:
@@ -166,14 +166,15 @@ dump:
                     out.write("    push rax\n")
                 elif op[0] == OP_DUMP:
                     out.write("    ;; -- dump --\n")
-                    out.write("    ;; -- TODO: not implemented -- \n")
+                    out.write("    pop rdi\n")
+                    out.write("    call dump\n")
                 else:
                     assert False, "Unreachable"
             out.write("    mov rax, 60\n")
             out.write("    mov rdi, 0\n")
             out.write("    syscall\n")
             out.write("    ret")
-    
+                      
 # TODO un-hardcode simulation
 program = [
     push(33),
