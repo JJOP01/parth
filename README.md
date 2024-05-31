@@ -1,5 +1,5 @@
 # parth
-programming language
+stack-based programming language
 
 ## Quick Start
 

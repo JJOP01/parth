@@ -115,8 +115,9 @@ def compile_program(program, out_file_path):
             out.write("    syscall\n")
             out.write("    ret")
 
-def parse_word_as_op(word):
-    assert COUNT_OPS == 4, "Exhaustive op handling in parse_word_as_op"
+def parse_token_as_op(token):
+    file_path, row, col, word = token
+    assert COUNT_OPS == 4, "Exhaustive op handling in parse_token_as_op"
     if word == '+':
         return plus()
     elif word == "-":
@@ -124,11 +125,32 @@ def parse_word_as_op(word):
     elif word == ".":
         return dump()
     else:
-        return push(int(word))
-            
-def load_program_from_file(file_path):
+        try:
+            return push(int(word))
+        except ValueError as e:
+            print("%s:%d:%d: %s" % (file_path, row, col, e))
+            exit(1)
+
+def find_col(line, start, predicate):
+    while start < len(line) and not predicate(line[start]):
+        start += 1
+    return start
+
+def lex_line(line):
+    col = find_col(line, 0, lambda x: not x.isspace())
+    while col < len(line):
+        col_end = find_col(line, col, lambda x: x.isspace())
+        yield (col, line[col:col_end])
+        col = find_col(line, col_end, lambda x: not x.isspace())
+
+def lex_file(file_path):
     with open(file_path, "r") as f:
-        return [parse_word_as_op(word) for word in f.read().split()]        
+        return [(file_path, row, col, token)
+            for (row, line) in enumerate(f.readlines())
+            for (col, token) in lex_line(line)]
+
+def load_program_from_file(file_path):
+    return [parse_token_as_op(token) for token in lex_file(file_path)]        
 
 def usage(program):
     print("Usage: %s <SUBCOMMAND> [ARGS]" % program)
@@ -169,6 +191,7 @@ if __name__ == '__main__':
         input_file_path, argv = uncons(argv)
         program = load_program_from_file(input_file_path)
         compile_program(program, "output.asm")
+        print("[INFO] Generating Assembly") 
         call_cmd(["nasm", "-felf64", "output.asm"])
         call_cmd(["ld", "-o", "output", "output.o"])
     else:
