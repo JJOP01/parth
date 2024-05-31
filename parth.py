@@ -128,8 +128,7 @@ def parse_word_as_op(word):
             
 def load_program_from_file(file_path):
     with open(file_path, "r") as f:
-        return [parse_word_as_op(word) for word in f.read().split()]
-        
+        return [parse_word_as_op(word) for word in f.read().split()]        
 
 def usage(program):
     print("Usage: %s <SUBCOMMAND> [ARGS]" % program)

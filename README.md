@@ -4,7 +4,7 @@ programming language
 ## Quick Start
 
 ```console
-$ ./parth.py sim
-$ ./parth.py com
+$ ./parth.py sim ./examples/test.parth
+$ ./parth.py com ./examples/test.parth
 $ ./output
 ```
