@@ -23,6 +23,7 @@ OP_IF=iota()
 OP_END=iota()
 OP_ELSE=iota()
 OP_DUP=iota()
+OP_GT=iota()
 COUNT_OPS=iota()
 
 def push(x):
@@ -52,11 +53,14 @@ def elss():
 def dup():
     return (OP_DUP, )
 
+def gt():
+    return (OP_GT, )\
+
 def simulate_program(program):
     stack = []
     ip = 0
     while ip < len(program):
-        assert COUNT_OPS == 9, "Exhaustive handling of operations in simualation"
+        assert COUNT_OPS == 10, "Exhaustive handling of operations in simualation"
         op = program[ip]
         if op[0] == OP_PUSH:
             stack.append(op[1])
@@ -76,6 +80,10 @@ def simulate_program(program):
             b = stack.pop()
             stack.append(int(a == b))
             ip += 1
+        elif op[0] == OP_DUMP:
+            a = stack.pop()
+            print(a)
+            ip += 1
         elif op[0] == OP_IF:
             a = stack.pop()
             if a == 0:
@@ -93,9 +101,10 @@ def simulate_program(program):
             stack.append(a)
             stack.append(a)
             ip += 1
-        elif op[0] == OP_DUMP:
+        elif op[0] == OP_GT:
             a = stack.pop()
-            print(a)
+            b = stack.pop()
+            stack.append(int(b > a))
             ip += 1
         else:
             assert False, "Unreachable"
@@ -139,7 +148,7 @@ def compile_program(program, out_file_path):
             out.write("global _start\n")
             out.write("_start:\n")
             for ip in range(len(program)):
-                assert COUNT_OPS == 9, "Exhausitve handling of operations in compilation"
+                assert COUNT_OPS == 10, "Exhausitve handling of operations in compilation"
                 op = program[ip]
                 if op[0] == OP_PUSH:
                     out.write("    ;; -- push %d --\n" % op[1])
@@ -187,6 +196,15 @@ def compile_program(program, out_file_path):
                     out.write("    pop rax\n")
                     out.write("    push rax\n")
                     out.write("    push rax\n")
+                elif op[0] == OP_GT:
+                    out.write("    ;; -- gt --\n")
+                    out.write("    mov rcx, 0\n")
+                    out.write("    mov rdx, 1\n")
+                    out.write("    pop rbx\n")
+                    out.write("    pop rax\n")
+                    out.write("    cmp rax, rbx\n")
+                    out.write("    cmovg rcx, rdx\n")
+                    out.write("    push rcx\n")   
                 else:
                     assert False, "Unreachable"
             out.write("    mov rax, 60\n")
@@ -196,7 +214,7 @@ def compile_program(program, out_file_path):
 
 def parse_token_as_op(token):
     file_path, row, col, word = token
-    assert COUNT_OPS == 9, "Exhaustive op handling in parse_token_as_op"
+    assert COUNT_OPS == 10, "Exhaustive op handling in parse_token_as_op"
     if word == '+':
         return plus()
     elif word == "-":
@@ -213,6 +231,8 @@ def parse_token_as_op(token):
         return elss()
     elif word == "dup":
         return dup()
+    elif word == ">":
+        return gt()
     else:
         try:
             return push(int(word))
@@ -224,7 +244,7 @@ def cross_reference_blocks(program):
     stack = []
     for ip in range(len(program)):
         op = program[ip]
-        assert COUNT_OPS == 9, "Exhaustive handling of ops in cross_reference_blocks. Keep in mind only operations that form blocks need to be handled here. "
+        assert COUNT_OPS == 10, "Exhaustive handling of ops in cross_reference_blocks. Keep in mind only operations that form blocks need to be handled here. "
         if op[0] == OP_IF:
             stack.append(ip)
         elif op[0] == OP_ELSE:
