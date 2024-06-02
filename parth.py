@@ -208,12 +208,12 @@ def compile_program(program, out_file_path):
                     out.write("    ;; -- else --\n")
                     assert len(op) >= 2, "'else' instruction does not have reference to the end of its block, please call cross_reference_blocks() on the program before trying to compile it"
                     out.write("    jmp addr_%d\n" % op[1])
-                    out.write("addr_%d:\n" % (ip + 1))
                 elif op[0] == OP_END:
                     assert len(op) >= 2, "'end' instruction does not have reference to the next instruction to jump to, please call cross_reference_blocks() on the program before trying to compile it"
                     out.write("    ;; -- end --\n")
                     if ip + 1 != op[1]:
                         out.write("    jmp addr_%d\n" % op[1])
+                    out.write("addr_%d:\n" % (ip + 1))
                 elif op[0] == OP_DUP:
                     out.write("    ;; -- dup --\n")
                     out.write("    pop rax\n")
@@ -323,55 +323,99 @@ def lex_file(file_path):
     with open(file_path, "r") as f:
         return [(file_path, row, col, token)
             for (row, line) in enumerate(f.readlines())
-            for (col, token) in lex_line(line)]
+                for (col, token) in lex_line(line.split('//')[0])]
 
 def load_program_from_file(file_path):
     return cross_reference_blocks([parse_token_as_op(token) for token in lex_file(file_path)])        
 
-def usage(program):
-    print("Usage: %s <SUBCOMMAND> [ARGS]" % program)
-    print("SUBCOMMANDS:")
-    print("    sim <file>    Simulate the program")
-    print("    com <file>    Compile the program")
-    print()
-
-def call_cmd(cmd):
-    print(cmd)
+def call_cmd_echoed(cmd):
+    print("[CMD] %s" % " ".join(map(shlex.quote, cmd)))
     subprocess.call(cmd)
 
-def uncons(xs):
-    return (xs[0], xs[1:])
+def usage(compiler_name):
+    print("Usage: %s <SUBCOMMAND> [ARGS]" % compiler_name)
+    print("SUBCOMMANDS:")
+    print("    sim <file>              Simulate the program")
+    print("    com [OPTIONS] <file>    Compile the program")
+    print("      OPTIONS:")
+    print("        -r                    Run the program after successful compilation")
+    print("        -o <file|dir>         Customise the output path")
+    print("    help                    Print this help to stdout and exit with 0 code")
 
-if __name__ == '__main__':
-    program_name, argv = uncons(sys.argv)
+if __name__ == '__main__' and '__file__' in globals():
+    argv = sys.argv
     assert len(argv) >= 1
+    compiler_name, *argv = argv
     if len(argv) < 1:
-        usage(program_name)
+        usage(compiler_name)
         print("ERROR: no subcommand is provided")
         exit(1)
-    subcommand, argv = uncons(argv)
+    subcommand, *argv = argv
 
     if subcommand == "sim":
         if len(argv) < 1:
             usage(program_name)
             print("ERROR: no input file is provided for the simulation")
             exit(1)
-        input_file_path, argv = uncons(argv)
-        program = load_program_from_file(input_file_path)
+        program_path, *argv = argv
+        program = load_program_from_file(program_path)
         simulate_program(program)
     elif subcommand == "com":
-        # TODO: -r flag for com that runs the application upon successful compilation
-        if len(argv) < 1:
-            usage(program_name)
+        run = False
+        program_path = None
+        output_path = None
+
+        while len(argv) > 0:
+            arg, *argv = argv
+            if arg == "-r":
+                run = True
+            elif arg == "-o":
+                if len(argv) == 0:
+                    usage(compiler_name)
+                    print("ERROR: no argument is provided for parameter -o")
+                    exit(1)
+                output_path, *argv = argv
+            else:
+                program_path = arg
+                break
+            
+        if program_path is None:
+            usage(compiler_name)
             print("ERROR: no input file is provided for the compilation")
             exit(1)
-        input_file_path, argv = uncons(argv)
-        program = load_program_from_file(input_file_path)
-        compile_program(program, "output.asm")
-        print("[INFO] Generating Assembly") 
-        call_cmd(["nasm", "-felf64", "output.asm"])
-        call_cmd(["ld", "-o", "output", "output.o"])
+
+        basename = None
+        basedir = None
+        if output_path is not None:
+            if path.isdir(output_path):
+                basename = path.basename(program_path)
+                parth_ext = '.parth'
+                if basename.endswith(parth_ext):
+                    basename = basename[:-len(parth_ext)]
+                basedir = path.dirname(output_path)
+            else:
+                basename = path.basename(output_path)
+                basedir = path.dirname(output_path) 
+        else:
+            basename = path.basename(program_path)
+            parth_ext = '.parth'
+            if basename.endswith(parth_ext):
+                basename = basename[:-len(parth_ext)]
+            basedir = path.dirname(program_path)
+        basepath = path.join(basedir, basename)
+        
+        print("[INFO] Generating %s" % (basepath + ".asm"))
+        program = load_program_from_file(program_path)
+        compile_program(program, basepath + ".asm")
+        call_cmd_echoed(["nasm", "-felf64", basepath + ".asm"])
+        call_cmd_echoed(["ld", "-o", basepath, basepath + ".o"])
+        if run:
+            print(basedir, basename, basepath)
+            call_cmd_echoed([basepath])
+    elif subcommand == "help":
+        usage(compiler_name)
+        exit(0)
     else:
-        usage(program_name)
+        usage(compiler_name)
         print('ERROR: unknown subcommand "%s"' % (subcommand))
         exit(1)
