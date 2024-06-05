@@ -19,7 +19,7 @@ end
 ```console
 $ cat program.parth
 34 35 .
-$ ./parth.py program.parth
+$ ./parth.py sim program.parth
 69
 ```
 
@@ -92,8 +92,15 @@ push(b - a)
 
 ### Control Flow
 
-- `if <then-branch> else <else-branch> end` - pops the element on top of the stack and if the element is not `0` executes the `<then-branch>`, otherwise `<else-branch>`
-- `while <condtion> do <body> end` - keeps executing both `<condition>` and `<body>` until `<condition>` produces `0` at the top of the stack. Checking the result of `<condition>` removes it from the stack. 
-
-
-
+- `<cond> if <then-branch> else <else-branch> end` - pops the element on top of the stack and if the element is not `0` executes the `<then-branch>`, otherwise `<else-branch>`
+```
+34 35 + 69 = if 69 . else 420 . end    // prints 69  <cond> = 1 (IF BLOCK)
+420 1 + 420 = if 69 . else 420 . end   // prints 420 <cond> = 0 (ELSE BLOCK)
+```
+- `while <condtion> do <body> end` - keeps executing both `<condition>` and `<body>` until `<condition>` produces `0` at the top of the stack. Checking the result of `<condition>` removes it from the stack.
+```
+10 while dup 0 > do
+    dup .
+    1 -
+end
+```
